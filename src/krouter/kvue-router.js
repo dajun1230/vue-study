@@ -5,6 +5,13 @@ let KVue;
 // 1. 实现一个install方法
 class KVueRouter {
   constructor(options) {
+    // 优化
+    // 缓存path和route映射关系
+    // this.routeMap = {};
+    // this.$options.routes.forEach(route => {
+    //   this.routeMap[route.path] = route;
+    // });
+
     this.$options = options;
 
     // 响应式数据
@@ -68,6 +75,11 @@ KVueRouter.install = function (Vue) {
       const current = this.$router.current;
       const route = routes.find((route) => route.path === current);
       const comp = route ? route.component : null;
+
+      // 优化
+      // const { routeMap, current } = this.$router;
+      // const comp = routeMap[current] ? routeMap[current].component : null;
+
       // 获取路由表 '/'
       return h(comp);
     },
