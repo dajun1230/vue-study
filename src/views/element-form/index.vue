@@ -1,6 +1,6 @@
 <template>
   <el-form label-width="100px" ref="ruleForm" :model="model" :rules="rules">
-    <el-form-item label="用户名1" prop="username">
+    <el-form-item label="用户名" prop="username">
       <el-input v-model="model.username"></el-input>
     </el-form-item>
     <el-form-item label="密码" prop="password">

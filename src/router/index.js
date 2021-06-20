@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 // import Home from "../views/Home.vue";
-import HomeForm from "../views/element-form";
-// import HomeForm from "../views/k-form";
+// import HomeForm from "../views/element-form";
+import HomeForm from "../views/k-form";
 
 // 1. 为什么用use方法？ 它做了什么？
 // VueRouter是插件，使用插件必须使用use方法

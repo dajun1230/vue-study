@@ -1,6 +1,6 @@
 <template>
   <div>
-    <k-form>
+    <k-form :model="model" :rules="rules" ref="ruleForm">
       <k-form-item label="用户名" prop="username">
         <k-form-input v-model="model.username"></k-form-input>
       </k-form-item>
@@ -31,11 +31,21 @@ export default {
         username: "",
         password: "",
       },
+      rules: {
+        username: [{ required: true, message: "请输入用户名" }],
+        password: [{ required: true, message: "请输入密码" }],
+      },
     };
   },
   methods: {
     onSubmit() {
-      console.log(this.model);
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          // alert("验证通过!");
+        } else {
+          // alert("校验失败!");
+        }
+      });
     },
   },
 };
