@@ -10,20 +10,35 @@ class Store {
     //   data: options.state,
     // });
 
-    this._vm = new KVue({
-      data: {
-        $$state: options.state,
-      },
-    });
-
     // 保存mutations
     this._mutations = options.mutations;
 
     // 保存actions
     this._actions = options.actions;
 
-    // 绑定this到store实例
+    // 保存getters
+    this._wrappedGetters = options.getters;
+
+    // 定义computed
+    const computed = {};
+    this.getters = {};
+    // {doubleCounter(state) {}}
     const store = this;
+    Object.keys(this._wrappedGetters).forEach((key) => {
+      // 获取用户定义的getter
+      const fn = store._wrappedGetters[key];
+      // 转换为computed可以使用无参数形式
+      computed[key] = function () {
+        return fn(store.state);
+      };
+      // 为getters定义只读属性
+      Object.defineProperty(store.getters, key, {
+        get: () => store._vm[key],
+      });
+    });
+
+    // 绑定this到store实例
+    // const store = this;
     // this.commit = this.commit.bind(store);
     const { commit, action } = store;
     this.commit = function boundCommit(type, payload) {
@@ -32,6 +47,13 @@ class Store {
     this.action = function boundAction(type, payload) {
       return action.call(store, type, payload);
     };
+
+    this._vm = new KVue({
+      data: {
+        $$state: options.state,
+      },
+      computed,
+    });
 
     // getters
     // 1. 遍历用户传入getters所有key，动态赋值，其值应该是函数执行结果

@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 // eslint-disable-next-line no-unused-vars
 let KVue;
 
@@ -5,19 +7,24 @@ let KVue;
 // 1. 实现一个install方法
 class KVueRouter {
   constructor(options) {
+    this.$options = options;
+
     // 优化
     // 缓存path和route映射关系
     // this.routeMap = {};
-    // this.$options.routes.forEach(route => {
+    // this.$options.routes.forEach((route) => {
     //   this.routeMap[route.path] = route;
     // });
 
-    this.$options = options;
-
     // 响应式数据
     const initial = window.location.hash.slice(1) || "/";
-    KVue.util.defineReactive(this, "current", initial);
+    // KVue.util.defineReactive(this, "current", initial);
     // this.current = "/";
+
+    this.current = initial;
+    Vue.util.defineReactive(this, "matched", []);
+    // match方法可以递归遍历路由表，获取匹配关系数组
+    this.match();
 
     // 监听事件
     window.addEventListener("hashchange", this.onhashChange.bind(this));
@@ -26,7 +33,30 @@ class KVueRouter {
 
   onhashChange() {
     this.current = window.location.hash.slice(1);
-    console.log(this.current);
+
+    this.matched = [];
+    this.match();
+  }
+
+  match(routes) {
+    routes = routes || this.$options.routes;
+
+    // 递归遍历 - 比较粗暴的方法
+    for (const route of routes) {
+      if (route.path === "/" && this.current === "/") {
+        this.matched.push(route);
+        return;
+      }
+
+      // /about/info
+      if (route.path !== "/" && this.current.indexOf(route.path) != -1) {
+        this.matched.push(route);
+        if (route.children) {
+          this.match(route.children);
+        }
+        return;
+      }
+    }
   }
 }
 
@@ -71,10 +101,35 @@ KVueRouter.install = function (Vue) {
   Vue.component("router-view", {
     render(h) {
       // 1. 获取路由器实例
-      const routes = this.$router.$options.routes;
-      const current = this.$router.current;
-      const route = routes.find((route) => route.path === current);
-      const comp = route ? route.component : null;
+      // const routes = this.$router.$options.routes;
+      // const current = this.$router.current;
+      // const route = routes.find((route) => route.path === current);
+      // const comp = route ? route.component : null;
+
+      // 解决路由嵌套的问题
+      // 标记当前router-view深度
+      this.$vnode.data.routerView = true;
+
+      let depth = 0;
+      let parent = this.$parent;
+      while (parent) {
+        const vnodeData = parent.$vnode && parent.$vnode.data;
+        if (vnodeData) {
+          if (vnodeData.routerView) {
+            // 说明当前parent是一个router-view
+            depth++;
+          }
+        }
+
+        parent = parent.$parent;
+      }
+
+      // 获取path对应的component
+      let comp = null;
+      const route = this.$router.matched[depth];
+      if (route) {
+        comp = route.component;
+      }
 
       // 优化
       // const { routeMap, current } = this.$router;

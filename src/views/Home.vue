@@ -5,7 +5,7 @@
     <p @click="$store.dispatch('add')">
       async counter: {{ $store.state.counter }}
     </p>
-    <!-- <p>doubleCounter: {{ $store.getters.doubleCounter }}</p> -->
+    <p>doubleCounter: {{ $store.getters.doubleCounter }}</p>
     <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
 </template>

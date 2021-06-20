@@ -1,4 +1,8 @@
 module.exports = {
+  configureWebpack: {
+    // 为设置断点调试准备
+    devtool: "source-map",
+  },
   publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
   outputDir: "dist",
   assetsDir: "",
