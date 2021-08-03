@@ -6,10 +6,18 @@
 
 <script>
 export default {
+  name: "KForm",
+  componentName: "KForm",
   provide() {
     return {
       form: this,
     };
+  },
+  created() {
+    this.fields = [];
+    this.$on("kkb.form.addField", (item) => {
+      this.fields.push(item);
+    });
   },
   props: {
     model: {
@@ -23,9 +31,11 @@ export default {
       // 全局校验方法
       // 1.执行内部所有FormItem校验方法，统一处理结果
       // 将FormItem数组转换为Promise数组
-      const tasks = this.$children
-        .filter((item) => item.prop) // 过滤掉没有传递props的，比如提交按钮
-        .map((item) => item.validate());
+      // const tasks = this.$children
+      //   .filter((item) => item.prop) // 过滤掉没有传递props的，比如提交按钮
+      //   .map((item) => item.validate());
+
+      const tasks = this.fields.map((item) => item.validate());
 
       // 2.所有任务必须全部成功才算校验通过，任一失败则校验失败
       Promise.all(tasks)

@@ -12,8 +12,12 @@
 
 <script>
 import Schema from "async-validator";
+import emitter from "@/mixins/emitter";
 
 export default {
+  name: "KFormItem",
+  componentName: "KFormItem",
+  mixins: [emitter],
   inject: ["form"],
   props: {
     label: {
@@ -34,6 +38,11 @@ export default {
     this.$on("validate", () => {
       this.validate();
     });
+
+    // 派发事件通知KForm，新增一个KFormItem实例
+    if (this.prop) {
+      this.dispatch("KForm", "kkb.form.addField", [this]);
+    }
   },
   methods: {
     validate() {
