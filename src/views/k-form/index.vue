@@ -18,6 +18,8 @@
 import KForm from "./KForm.vue";
 import KFormItem from "./KFormItem.vue";
 import KFormInput from "./KInput.vue";
+import create from "../../utils/create";
+import Notice from "@/components/Notice.vue";
 
 export default {
   components: {
@@ -39,12 +41,18 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$refs["ruleForm"].validate((valid) => {
-        if (valid) {
-          // alert("验证通过!");
-        } else {
-          // alert("校验失败!");
-        }
+      this.$refs["ruleForm"].validate((isValid) => {
+        // 创建notice实例
+        create(Notice, {
+          title: "村长喊你来搬砖",
+          message: isValid ? "请求登陆" : "校验失败",
+          duration: 3000,
+        }).show();
+        // if (isValid) {
+        //   // alert("验证通过!");
+        // } else {
+        //   // alert("校验失败!");
+        // }
       });
     },
   },
