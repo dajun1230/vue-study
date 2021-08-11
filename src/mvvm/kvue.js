@@ -73,7 +73,9 @@ class Observer {
     this.value = value;
 
     // 判断value是obj还是数组
-    this.walk(value); // 目前只做数组
+    if (typeof value === "object") {
+      this.walk(value); // 目前只做对象
+    }
   }
 
   walk(obj) {
@@ -134,6 +136,14 @@ class Compile {
         // 执行指令
         this[dir] && this[dir](node, exp);
       }
+
+      // 事件处理
+      if (this.isEvent(attrName)) {
+        // @click="onClick"
+        const dir = attrName.substring(1);
+        // 事件监听
+        this.eventHandler(node, exp, dir);
+      }
     });
   }
 
@@ -187,10 +197,20 @@ class Compile {
   isDirective(attrName) {
     return attrName.indexOf("k-") === 0;
   }
+
+  isEvent(attrName) {
+    return attrName.indexOf("@") === 0;
+  }
+
+  eventHandler(node, exp, dir) {
+    // methods: {onClick: function(){}}
+    const fn = this.$vm.$options.methods && this.$vm.$options.methods[exp];
+    node.addEventListener(dir, fn.bind(this.$vm));
+  }
 }
 
 // Watcher：小秘书，界面中的一个依赖对应一个小秘书
-const watchers = [];
+// const watchers = [];
 class Watcher {
   constructor(vm, key, updateFn) {
     this.vm = vm;

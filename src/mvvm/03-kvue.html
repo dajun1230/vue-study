@@ -8,7 +8,7 @@
 </head>
 <body>
   <div id="app">
-    <p>{{counter}}</p>
+    <p @click="add">{{counter}}</p>
     <p k-text="counter"></p>
     <p k-html="desc"></p>
   </div>
@@ -21,13 +21,18 @@
       data: {
         counter: 1,
         desc: 'kvue<span style="color: red">真棒</span>'
+      },
+      methods: {
+        add() {
+          this.counter++;
+        }
       }
     })
 
-    setInterval(() => {
-      // app.$data.counter++
-      app.counter++
-    }, 1000);
+    // setInterval(() => {
+    //   // app.$data.counter++
+    //   app.counter++
+    // }, 1000);
   </script>
 </body>
 </html>
